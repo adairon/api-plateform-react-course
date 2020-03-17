@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Invoice;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
@@ -17,6 +18,19 @@ class InvoiceRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Invoice::class);
+    }
+    
+    //fonction pour trouver le dernier chrono pour un user avec requête DQL :
+    public function findNextChrono(User $user) {
+        return $this->createQueryBuilder("i") //requête sur les invoices qu'on appelle "i"
+                    ->select("i.chrono") // on veut uniquement le champs chrono
+                    ->join("i.customer", "c") // on veut trouver le customer lié à l'invoice (et on l'appelle "c")
+                    ->where("c.user = :user") // là où le customer a un user égal au paramètre ":user"
+                    ->setParameter("user", $user) // le paramètre ":user" pointe vers l'user qu'on a reçu en paramètre de la fonction
+                    ->orderBy("i.chrono", "DESC") // on classe les résultats par chrono descendant
+                    ->setMaxResults(1) // nb max de résultats : 1 => on ne veut que le dernier chrono (le plus grand donc pour cet user)
+                    ->getQuery() // on recupère la query
+                    ->getSingleScalarResult() +1; //On veut uniquement le numéro de chrono auquel on ajoute 1
     }
 
     // /**
