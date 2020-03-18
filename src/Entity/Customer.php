@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  normalizationContext={
  *      "groups"={"customers_read"}
  * },
- *  attributes={"order": {"lastName":"ASC"}}
+ *  attributes={"order": {"id":"ASC"}}
  * )
  * @ApiFilter(SearchFilter::class)
  * @ApiFilter(OrderFilter::class)
