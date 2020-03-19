@@ -1,26 +1,37 @@
-import React from "react";
+import React, {useContext} from "react";
+import AuthAPI from "../services/authAPI";
+import { NavLink } from "react-router-dom";
+import AuthContext from "../contexts/AuthContext";
 
-
+// Code perso :
 var divStyle = {
   display: "none"
 };
-
-function showNavBar(){
-    if (divStyle.display == "none"){
-      console.log(divStyle.display)
-    }
+function showNavBar() {
+  if (divStyle.display == "none") {
+    console.log(divStyle.display);
+  }
 }
 
+const Navbar = ({ history }) => {
 
-const Navbar = props => {
+  const { isAuthenticated, setIsAuthenticated} = useContext(AuthContext)
+
+  const handleLogout = () => {
+    AuthAPI.logout();
+    setIsAuthenticated(false);
+    history.push("/login");
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light" expand="lg">
-      <a className="navbar-brand" href="#">
+      <NavLink className="navbar-brand" to="/">
         SymReact !
-      </a>
+      </NavLink>
       <button
         className="navbar-toggler"
-        type="button"
+        to="/"
+        e="button"
         data-toggle="collapse"
         data-target="#navbarColor03"
         aria-controls="navbarColor03"
@@ -38,32 +49,37 @@ const Navbar = props => {
       >
         <ul className="navbar-nav mr-auto">
           <li className="nav-item">
-            <a className="nav-link" href="#">
+            <NavLink className="nav-link" to="/customers">
               Clients
-            </a>
+            </NavLink>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#">
+            <NavLink className="nav-link" to="/invoices">
               Factures
-            </a>
+            </NavLink>
           </li>
         </ul>
         <ul className="navbar-nav ml-auto">
-          <li className="nav-item">
-            <a href="#" className="nav-link">
-              Inscription
-            </a>
-          </li>
-          <li className="nav-item">
-            <a href="#" className="btn btn-success">
-              Connexion !
-            </a>
-          </li>
-          <li className="nav-item">
-            <a href="" className="btn btn-danger">
-              Déconnexion
-            </a>
-          </li>
+          {(!isAuthenticated && (
+            <>
+              <li className="nav-item">
+                <NavLink href="#" className="nav-link" to="/register">
+                  Inscription
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink href="#" className="btn btn-success" to="/login">
+                  Connexion !
+                </NavLink>
+              </li>
+            </>
+          )) || (
+            <li className="nav-item">
+              <button onClick={handleLogout} href="" className="btn btn-danger">
+                Déconnexion
+              </button>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
