@@ -1,11 +1,10 @@
 import React, { useState, useContext } from "react";
 import AuthAPI from "../services/authAPI";
 import AuthContext from "../contexts/AuthContext";
+import Field from "../components/forms/Field";
 
-
-const LoginPage = ({history}) => {
-
-    const {setIsAuthenticated} = useContext(AuthContext)
+const LoginPage = ({ history }) => {
+  const { setIsAuthenticated } = useContext(AuthContext);
 
   const [credentials, setCredentials] = useState({
     username: "",
@@ -15,8 +14,8 @@ const LoginPage = ({history}) => {
   const [error, setError] = useState("");
 
   // Gestion des champs
-  const handleChange = ({currentTarget}) => {
-      const {value, name} = currentTarget;
+  const handleChange = ({ currentTarget }) => {
+    const { value, name } = currentTarget;
 
     setCredentials({ ...credentials, [name]: value });
   };
@@ -29,9 +28,10 @@ const LoginPage = ({history}) => {
       setError("");
       setIsAuthenticated(true);
       history.replace("/customers");
-
     } catch (error) {
-      setError("Aucun compte ne possède cette adresse ou alors les informations ne correspondent pas");
+      setError(
+        "Aucun compte ne possède cette adresse ou alors les informations ne correspondent pas"
+      );
     }
   };
 
@@ -40,31 +40,24 @@ const LoginPage = ({history}) => {
       <h1>Connexion à l'application</h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="_username">Adresse email</label>
-          <input
-            value={credentials.username}
-            onChange={handleChange}
-            type="email"
-            placeholder="Adresse email de connexion"
-            name="username"
-            id="username"
-            className={"form-control" + (error && " is-invalid")}
-          />
-          {error && <p className="invalid-feedback">{error}</p>}
-        </div>
-        <div className="form-group">
-          <label htmlFor="_password">Mot de passe</label>
-          <input
-            value={credentials.password}
-            onChange={handleChange}
-            type="password"
-            placeholder="Mot de passe"
-            name="password"
-            id="password"
-            className="form-control"
-          />
-        </div>
+        <Field
+          label="Adresse email"
+          name="username"
+          value={credentials.username}
+          onChange={handleChange}
+          placeholder="Adresse email de connexion"
+          error={error}
+        />
+        <Field
+          name="password"
+          label="Mot de passe"
+          placeholder="Mot de passe"
+          value={credentials.password}
+          onChange={handleChange}
+          type="password"
+          error=""
+        />
+
         <div className="form-group">
           <button type="submit" className="btn btn-success">
             Je me connecte
