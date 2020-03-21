@@ -20,17 +20,21 @@ class InvoiceRepository extends ServiceEntityRepository
         parent::__construct($registry, Invoice::class);
     }
     
-    //fonction pour trouver le dernier chrono pour un user avec requête DQL :
+    //fonction pour trouver le dernier chrono pour un user avec requête DQL (si c'est la première facture, il n'y a pas de dernier chrono alors on retourne 1 quand il y a une erreur) :
     public function findNextChrono(User $user) {
-        return $this->createQueryBuilder("i") //requête sur les invoices qu'on appelle "i"
-                    ->select("i.chrono") // on veut uniquement le champs chrono
-                    ->join("i.customer", "c") // on veut trouver le customer lié à l'invoice (et on l'appelle "c")
-                    ->where("c.user = :user") // là où le customer a un user égal au paramètre ":user"
-                    ->setParameter("user", $user) // le paramètre ":user" pointe vers l'user qu'on a reçu en paramètre de la fonction
-                    ->orderBy("i.chrono", "DESC") // on classe les résultats par chrono descendant
-                    ->setMaxResults(1) // nb max de résultats : 1 => on ne veut que le dernier chrono (le plus grand donc pour cet user)
-                    ->getQuery() // on recupère la query
-                    ->getSingleScalarResult() +1; //On veut uniquement le numéro de chrono auquel on ajoute 1
+        try {
+            return $this->createQueryBuilder("i") //requête sur les invoices qu'on appelle "i"
+                        ->select("i.chrono") // on veut uniquement le champs chrono
+                        ->join("i.customer", "c") // on veut trouver le customer lié à l'invoice (et on l'appelle "c")
+                        ->where("c.user = :user") // là où le customer a un user égal au paramètre ":user"
+                        ->setParameter("user", $user) // le paramètre ":user" pointe vers l'user qu'on a reçu en paramètre de la fonction
+                        ->orderBy("i.chrono", "DESC") // on classe les résultats par chrono descendant
+                        ->setMaxResults(1) // nb max de résultats : 1 => on ne veut que le dernier chrono (le plus grand donc pour cet user)
+                        ->getQuery() // on recupère la query
+                        ->getSingleScalarResult() +1; //On veut uniquement le numéro de chrono auquel on ajoute 1
+        } catch(\Exception $e){
+            return 1;
+        }
     }
 
     // /**
